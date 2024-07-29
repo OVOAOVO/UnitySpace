@@ -45,7 +45,7 @@ public static class FunctionLibrary {
 
     public static Vector3 Sphere(float u, float v, float t)
     {
-        float r = 0.5f + 0.5f * Sin(PI * t);
+        float r = 0.9f + 0.1f * Sin(PI * (6f * u + 4f * v + t));
         float s = r * Cos(0.5f * PI * v);
         Vector3 p;
         p.x = s * Sin(PI * u);
@@ -63,5 +63,25 @@ public static class FunctionLibrary {
         p.y = r2 * Sin(PI * v);
         p.z = s * Cos(PI * u);
         return p;
+    }
+    public static FunctionName GetNextFunctionName(FunctionName name)
+    {
+        if (name < FunctionName.Torus)
+        {
+            return name + 1;
+        }
+        else
+        {
+            return FunctionName.Wave;
+        }
+    }
+    public static FunctionName GetRandomFunctionNameOtherThan(FunctionName name)
+    {
+        var choice = (FunctionName)Random.Range(1, functions.Length);
+        return choice == name ? 0 : choice;
+    }
+    public static Vector3 Morph( float u, float v, float t, Function from, Function to, float progress)
+    {
+        return Vector3.LerpUnclamped(from(u, v, t), to(u, v, t), SmoothStep(0f, 1f, progress));
     }
 }
