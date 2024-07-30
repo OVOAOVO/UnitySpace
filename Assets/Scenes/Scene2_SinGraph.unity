@@ -123,6 +123,58 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &717698242
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 717698244}
+  - component: {fileID: 717698243}
+  m_Layer: 0
+  m_Name: GPUGraph
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &717698243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 717698242}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c738b791abbfca4397a3ee7e30a6d09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  resolution: 100
+  function: 4
+  transitionMode: 0
+  functionDuration: 1
+  transitionDuration: 0
+  computeShader: {fileID: 7200000, guid: 5aed2b8492fd13d4bb4e43450ddc8b2c, type: 3}
+  material: {fileID: 2100000, guid: ac814d35f70259743a931e9309196c3c, type: 2}
+  mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &717698244
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 717698242}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.1012803, y: 0.026044108, z: 0.28084165}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &868389355
 GameObject:
   m_ObjectHideFlags: 0
@@ -344,7 +396,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1083723396
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -360,6 +412,9 @@ MonoBehaviour:
   pointPrefab: {fileID: 3920773491010957438, guid: 4f8cef0dd3cbc6946b87bd36c159dc05, type: 3}
   resolution: 50
   function: 0
+  transitionMode: 0
+  functionDuration: 1
+  transitionDuration: 1
 --- !u!4 &1083723397
 Transform:
   m_ObjectHideFlags: 0
@@ -647,7 +702,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   display: {fileID: 1814618572}
-  displayMode: 1
+  displayMode: 0
   sampleDuration: 1
 --- !u!1 &1902639885
 GameObject:
@@ -836,3 +891,4 @@ SceneRoots:
   - {fileID: 1083723397}
   - {fileID: 2144274627}
   - {fileID: 1009380727}
+  - {fileID: 717698244}
