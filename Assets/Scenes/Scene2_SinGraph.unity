@@ -152,13 +152,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c738b791abbfca4397a3ee7e30a6d09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resolution: 100
+  resolution: 300
   function: 4
   transitionMode: 0
   functionDuration: 1
-  transitionDuration: 0
+  transitionDuration: 1
   computeShader: {fileID: 7200000, guid: 5aed2b8492fd13d4bb4e43450ddc8b2c, type: 3}
-  material: {fileID: 2100000, guid: ac814d35f70259743a931e9309196c3c, type: 2}
+  material: {fileID: 2100000, guid: 0d9009ce871f7d248ab5652de321ae92, type: 2}
   mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!4 &717698244
 Transform:
