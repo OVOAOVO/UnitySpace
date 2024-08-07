@@ -158,6 +158,8 @@ MonoBehaviour:
   resolution: 16
   displacement: 0.1
   instanceScale: 2
+  type: 0
+  dimensions: 3
   seed: 0
   domain:
     translation:
