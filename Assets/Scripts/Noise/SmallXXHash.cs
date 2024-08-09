@@ -3,6 +3,7 @@ using UnityEngine;
 using Unity.Mathematics;
 public readonly struct SmallXXHash
 {
+
     const uint primeA = 0b10011110001101110111100110110001;
     const uint primeB = 0b10000101111010111100101001110111;
     const uint primeC = 0b11000010101100101010111000111101;
@@ -95,4 +96,7 @@ public readonly struct SmallXXHash4
     public float4 Floats01C => (float4)BytesC * (1f / 255f);
 
     public float4 Floats01D => (float4)BytesD * (1f / 255f);
+
+    public static SmallXXHash4 operator +(SmallXXHash4 h, int v) =>
+    h.accumulator + (uint)v;
 }
