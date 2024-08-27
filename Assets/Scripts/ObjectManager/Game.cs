@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class Game : PersistableObject
 {
     public PersistentStorage storage;
-    public ShapeFactory shapeFactory;
+    [SerializeField] ShapeFactory shapeFactory;
     public KeyCode createKey = KeyCode.C;
     public KeyCode destroyKey = KeyCode.X;
     public KeyCode newGameKey = KeyCode.N;
@@ -27,6 +27,10 @@ public class Game : PersistableObject
     public int levelCount;
     int loadedLevelBuildIndex;
 
+
+    public static Game Instance { get; private set; }
+    public SpawnZone SpawnZoneOfLevel { get; set; }
+
     IEnumerator LoadLevel(int levelBuildIndex)
     {
         enabled = false;
@@ -45,6 +49,7 @@ public class Game : PersistableObject
     }
     void Start()
     {
+        Instance = this;
         shapes = new List<Shape>();
 
         if (Application.isEditor)
@@ -62,7 +67,10 @@ public class Game : PersistableObject
         }
         StartCoroutine(LoadLevel(1));
     }
-
+    void OnEnable()
+    {
+        Instance = this;
+    }
     void Update()
     {
         if (Input.GetKeyDown(createKey))
@@ -116,7 +124,7 @@ public class Game : PersistableObject
     {
         Shape instance = shapeFactory.GetRandom();
         Transform t = instance.transform;
-        t.localPosition = Random.insideUnitSphere * 5f;
+        t.localPosition = SpawnZoneOfLevel.SpawnPoint;
         t.localRotation = Random.rotation;
         t.localScale = Vector3.one * Random.Range(0.1f, 1f);
         instance.SetColor(Random.ColorHSV(
