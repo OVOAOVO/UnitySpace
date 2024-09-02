@@ -1449,7 +1449,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   storage: {fileID: 2071354237}
-  shapeFactory: {fileID: 11400000, guid: 85fb7d37c5a159749be72ad1c9aa599e, type: 2}
   createKey: 99
   destroyKey: 120
   newGameKey: 110
@@ -1459,6 +1458,9 @@ MonoBehaviour:
   reseedOnLoad: 0
   creationSpeedSlider: {fileID: 55125594}
   destructionSpeedSlider: {fileID: 972061762}
+  shapeFactories:
+  - {fileID: 11400000, guid: 85fb7d37c5a159749be72ad1c9aa599e, type: 2}
+  - {fileID: 11400000, guid: 37ce63e5224fab04aa2dc36489268b70, type: 2}
 --- !u!4 &2064154157
 Transform:
   m_ObjectHideFlags: 0
