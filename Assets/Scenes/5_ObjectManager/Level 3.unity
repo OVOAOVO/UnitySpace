@@ -359,6 +359,13 @@ MonoBehaviour:
         min: 0
         max: 1
     uniformColor: 0
+    oscillationDirection: 0
+    oscillationAmplitude:
+      min: 0
+      max: 0
+    oscillationFrequency:
+      min: 0
+      max: 0
   overrideConfig: 0
   spawnZones:
   - {fileID: 1542293090}
@@ -435,6 +442,13 @@ MonoBehaviour:
         min: 0
         max: 0.4
     uniformColor: 0
+    oscillationDirection: 0
+    oscillationAmplitude:
+      min: 0
+      max: 0
+    oscillationFrequency:
+      min: 0
+      max: 0
   surfaceOnly: 0
 --- !u!1 &1273764146
 GameObject:
@@ -505,6 +519,13 @@ MonoBehaviour:
         min: 0
         max: 0.7
     uniformColor: 0
+    oscillationDirection: 0
+    oscillationAmplitude:
+      min: 0
+      max: 0
+    oscillationFrequency:
+      min: 0
+      max: 0
   surfaceOnly: 1
 --- !u!1 &1542293088
 GameObject:
@@ -575,6 +596,13 @@ MonoBehaviour:
         min: 0
         max: 0.7
     uniformColor: 0
+    oscillationDirection: 0
+    oscillationAmplitude:
+      min: 0
+      max: 0.21
+    oscillationFrequency:
+      min: 0
+      max: 0.91
   surfaceOnly: 0
 --- !u!1 &2002452142
 GameObject:
@@ -630,6 +658,13 @@ MonoBehaviour:
         min: 0
         max: 0.6
     uniformColor: 0
+    oscillationDirection: 0
+    oscillationAmplitude:
+      min: 0
+      max: 0
+    oscillationFrequency:
+      min: 0
+      max: 0
   surfaceOnly: 0
 --- !u!4 &2002452144
 Transform:

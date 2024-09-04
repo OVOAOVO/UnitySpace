@@ -17,7 +17,7 @@ public class Game : PersistableObject
     public float DestructionSpeed { get; set; }
     float creationProgress, destructionProgress;
 
-    const int saveVersion = 5;
+    const int saveVersion = 6;
 
     List<Shape> shapes;
 
