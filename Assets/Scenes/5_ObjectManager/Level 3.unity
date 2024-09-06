@@ -168,6 +168,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnZone: {fileID: 783292541}
+  populationLimit: 100
   persistentObjects:
   - {fileID: 783292541}
 --- !u!1 &330839002
@@ -366,6 +367,19 @@ MonoBehaviour:
     oscillationFrequency:
       min: 0
       max: 0
+    satellite:
+      amount:
+        min: 0
+        max: 0
+      relativeScale:
+        min: 0
+        max: 0
+      orbitRadius:
+        min: 0
+        max: 0
+      orbitFrequency:
+        min: 0
+        max: 0
   overrideConfig: 0
   spawnZones:
   - {fileID: 1542293090}
@@ -449,6 +463,19 @@ MonoBehaviour:
     oscillationFrequency:
       min: 0
       max: 0
+    satellite:
+      amount:
+        min: 0
+        max: 3
+      relativeScale:
+        min: 0.25
+        max: 0.5
+      orbitRadius:
+        min: 1
+        max: 2
+      orbitFrequency:
+        min: 0.25
+        max: 0.5
   surfaceOnly: 0
 --- !u!1 &1273764146
 GameObject:
@@ -526,6 +553,19 @@ MonoBehaviour:
     oscillationFrequency:
       min: 0
       max: 0
+    satellite:
+      amount:
+        min: 0
+        max: 3
+      relativeScale:
+        min: 0.25
+        max: 0.5
+      orbitRadius:
+        min: 1
+        max: 2
+      orbitFrequency:
+        min: 0.25
+        max: 0.5
   surfaceOnly: 1
 --- !u!1 &1542293088
 GameObject:
@@ -603,6 +643,19 @@ MonoBehaviour:
     oscillationFrequency:
       min: 0
       max: 0.91
+    satellite:
+      amount:
+        min: 0
+        max: 3
+      relativeScale:
+        min: 0.25
+        max: 0.5
+      orbitRadius:
+        min: 1
+        max: 2
+      orbitFrequency:
+        min: 0.25
+        max: 0.5
   surfaceOnly: 0
 --- !u!1 &2002452142
 GameObject:
@@ -665,6 +718,19 @@ MonoBehaviour:
     oscillationFrequency:
       min: 0
       max: 0
+    satellite:
+      amount:
+        min: 0
+        max: 3
+      relativeScale:
+        min: 0.25
+        max: 0.5
+      orbitRadius:
+        min: 1
+        max: 2
+      orbitFrequency:
+        min: 0.25
+        max: 0.5
   surfaceOnly: 0
 --- !u!4 &2002452144
 Transform:

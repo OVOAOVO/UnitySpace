@@ -10,6 +10,8 @@ public class Shape : PersistableObject {
     List<ShapeBehavior> behaviorList = new List<ShapeBehavior>();
 
     public float Age { get; private set; }
+    public int InstanceId { get; private set; }
+
     public int ShapeId
     {
         get
@@ -32,6 +34,8 @@ public class Shape : PersistableObject {
     int shapeId = int.MinValue;
 
     public int MaterialId { get; private set; }
+
+    public int SaveIndex { get; set; }
 
     public void SetMaterial(Material material, int materialId)
     {
@@ -119,7 +123,11 @@ public class Shape : PersistableObject {
         Age += Time.deltaTime;
         for (int i = 0; i < behaviorList.Count; i++)
         {
-            behaviorList[i].GameUpdate(this);
+            if (!behaviorList[i].GameUpdate(this))
+            {
+                behaviorList[i].Recycle();
+                behaviorList.RemoveAt(i--);
+            }
         }
     }
 
@@ -192,6 +200,7 @@ public class Shape : PersistableObject {
     public void Recycle()
     {
         Age = 0f;
+        InstanceId += 1;
         for (int i = 0; i < behaviorList.Count; i++)
         {
             behaviorList[i].Recycle();
@@ -219,4 +228,53 @@ public class Shape : PersistableObject {
         Debug.LogError("Forgot to support " + type);
         return null;
     }
+    public void ResolveShapeInstances()
+    {
+        for (int i = 0; i < behaviorList.Count; i++)
+        {
+            behaviorList[i].ResolveShapeInstances();
+        }
+    }
+}
+
+
+[System.Serializable]
+public struct ShapeInstance
+{
+
+    public Shape Shape { get; private set; }
+
+    int instanceIdOrSaveIndex;
+    public ShapeInstance(Shape shape)
+    {
+        Shape = shape;
+        instanceIdOrSaveIndex = shape.InstanceId;
+    }
+
+    public ShapeInstance(int saveIndex)
+    {
+        Shape = Game.Instance.GetShape(saveIndex);
+        instanceIdOrSaveIndex = Shape.InstanceId;
+    }
+    public bool IsValid
+    {
+        get
+        {
+            return Shape && instanceIdOrSaveIndex == Shape.InstanceId;
+        }
+    }
+
+    public static implicit operator ShapeInstance(Shape shape)
+    {
+        return new ShapeInstance(shape);
+    }
+    public void Resolve()
+    {
+        if (instanceIdOrSaveIndex >= 0)
+        {
+            Shape = Game.Instance.GetShape(instanceIdOrSaveIndex);
+            instanceIdOrSaveIndex = Shape.InstanceId;
+        }
+    }
+
 }

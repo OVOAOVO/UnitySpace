@@ -10,10 +10,11 @@ public abstract class ShapeBehavior
     {
         Movement,
         Rotation,
-        Oscillation
+        Oscillation,
+        Satellite
     }
 
-    public abstract void GameUpdate(Shape shape);
+    public abstract bool GameUpdate(Shape shape);
 
     public abstract void Save(GameDataWriter writer);
 
@@ -33,6 +34,8 @@ public abstract class ShapeBehavior
         }
     }
 #endif
+
+    public virtual void ResolveShapeInstances() { }
 }
 
 public static class ShapeBehaviorTypeMethods
@@ -47,6 +50,8 @@ public static class ShapeBehaviorTypeMethods
                 return ShapeBehaviorPool<RotationShapeBehavior>.Get();
             case ShapeBehaviorType.Oscillation:
                 return ShapeBehaviorPool<OscillationShapeBehavior>.Get();
+            case ShapeBehaviorType.Satellite:
+                return ShapeBehaviorPool<SatelliteShapeBehavior>.Get();
         }
         UnityEngine.Debug.Log("Forgot to support " + type);
         return null;

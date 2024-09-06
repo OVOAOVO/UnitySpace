@@ -8,10 +8,13 @@ public class GameLevel : PersistableObject
     SpawnZone spawnZone;
 
     [SerializeField]
+    int populationLimit;
+
+    [SerializeField]
     PersistableObject[] persistentObjects;
-    public Shape SpawnShape()
+    public void SpawnShapes()
     {
-        return spawnZone.SpawnShape();
+        spawnZone.SpawnShapes();
     }
     void OnEnable()
     {
@@ -35,6 +38,13 @@ public class GameLevel : PersistableObject
         for (int i = 0; i < savedCount; i++)
         {
             persistentObjects[i].Load(reader);
+        }
+    }
+    public int PopulationLimit
+    {
+        get
+        {
+            return populationLimit;
         }
     }
 }
