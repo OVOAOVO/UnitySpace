@@ -17,7 +17,7 @@ public class Game : PersistableObject
     public float DestructionSpeed { get; set; }
     float creationProgress, destructionProgress;
 
-    const int saveVersion = 6;
+    const int saveVersion = 7;
 
     List<Shape> shapes;
 
@@ -142,6 +142,7 @@ public class Game : PersistableObject
         {
             shapes[i].GameUpdate();
         }
+        GameLevel.Current.GameUpdate();
         inGameUpdateLoop = false;
         creationProgress += Time.deltaTime * CreationSpeed;
         while (creationProgress >= 1f)
