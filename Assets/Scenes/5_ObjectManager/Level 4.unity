@@ -286,6 +286,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnConfig:
+    factories: []
     movementDirection: 3
     speed:
       min: 1.5
@@ -306,6 +307,27 @@ MonoBehaviour:
       value:
         min: 0.25
         max: 1
+    uniformColor: 0
+    oscillationDirection: 0
+    oscillationAmplitude:
+      min: 0
+      max: 0
+    oscillationFrequency:
+      min: 0
+      max: 0
+    satellite:
+      amount:
+        min: 0
+        max: 0
+      relativeScale:
+        min: 0
+        max: 0
+      orbitRadius:
+        min: 0
+        max: 0
+      orbitFrequency:
+        min: 0
+        max: 0
   surfaceOnly: 0
 --- !u!1 &998493436
 GameObject:
@@ -398,6 +420,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnConfig:
+    factories: []
     movementDirection: 2
     speed:
       min: 1.5
@@ -418,6 +441,27 @@ MonoBehaviour:
       value:
         min: 0.25
         max: 1
+    uniformColor: 0
+    oscillationDirection: 0
+    oscillationAmplitude:
+      min: 0
+      max: 0
+    oscillationFrequency:
+      min: 0
+      max: 0
+    satellite:
+      amount:
+        min: 0
+        max: 0
+      relativeScale:
+        min: 0.1
+        max: 0.1
+      orbitRadius:
+        min: 0
+        max: 0
+      orbitFrequency:
+        min: 0
+        max: 0
   surfaceOnly: 0
 --- !u!1 &1575694854
 GameObject:
@@ -495,6 +539,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnZone: {fileID: 2024465861}
+  populationLimit: 100
   persistentObjects:
   - {fileID: 1065644067}
   - {fileID: 923126828}
@@ -561,6 +606,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnConfig:
+    factories: []
     movementDirection: 0
     speed:
       min: 0
@@ -579,6 +625,27 @@ MonoBehaviour:
         min: 0
         max: 0
       value:
+        min: 0
+        max: 0
+    uniformColor: 0
+    oscillationDirection: 0
+    oscillationAmplitude:
+      min: 0
+      max: 0
+    oscillationFrequency:
+      min: 0
+      max: 0
+    satellite:
+      amount:
+        min: 0
+        max: 0
+      relativeScale:
+        min: 0.1
+        max: 0.1
+      orbitRadius:
+        min: 0
+        max: 0
+      orbitFrequency:
         min: 0
         max: 0
   overrideConfig: 0

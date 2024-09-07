@@ -372,12 +372,22 @@ MonoBehaviour:
         min: 0
         max: 0
       relativeScale:
-        min: 0
-        max: 0
+        min: 0.1
+        max: 0.1
       orbitRadius:
         min: 0
         max: 0
       orbitFrequency:
+        min: 0
+        max: 0
+    lifecycle:
+      growingDuration:
+        min: 0
+        max: 0
+      adultDuration:
+        min: 0
+        max: 0
+      dyingDuration:
         min: 0
         max: 0
   overrideConfig: 0
@@ -476,6 +486,16 @@ MonoBehaviour:
       orbitFrequency:
         min: 0.25
         max: 0.5
+    lifecycle:
+      growingDuration:
+        min: 1
+        max: 2
+      adultDuration:
+        min: 1
+        max: 5
+      dyingDuration:
+        min: 1
+        max: 2
   surfaceOnly: 0
 --- !u!1 &1273764146
 GameObject:
@@ -566,6 +586,16 @@ MonoBehaviour:
       orbitFrequency:
         min: 0.25
         max: 0.5
+    lifecycle:
+      growingDuration:
+        min: 1
+        max: 2
+      adultDuration:
+        min: 1
+        max: 5
+      dyingDuration:
+        min: 1
+        max: 2
   surfaceOnly: 1
 --- !u!1 &1542293088
 GameObject:
@@ -656,6 +686,16 @@ MonoBehaviour:
       orbitFrequency:
         min: 0.25
         max: 0.5
+    lifecycle:
+      growingDuration:
+        min: 1
+        max: 2
+      adultDuration:
+        min: 1
+        max: 5
+      dyingDuration:
+        min: 1
+        max: 2
   surfaceOnly: 0
 --- !u!1 &2002452142
 GameObject:
@@ -731,6 +771,16 @@ MonoBehaviour:
       orbitFrequency:
         min: 0.25
         max: 0.5
+    lifecycle:
+      growingDuration:
+        min: 1
+        max: 2
+      adultDuration:
+        min: 1
+        max: 5
+      dyingDuration:
+        min: 1
+        max: 2
   surfaceOnly: 0
 --- !u!4 &2002452144
 Transform:
