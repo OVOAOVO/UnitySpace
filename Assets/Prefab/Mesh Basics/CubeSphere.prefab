@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2804566527704005856}
   - component: {fileID: 8137976553255981804}
   - component: {fileID: 1677394717491624943}
+  - component: {fileID: 7872732159200106153}
   m_Layer: 0
   m_Name: CubeSphere
   m_TagString: Untagged
@@ -98,5 +99,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04bec22bb9bd2134b89a30b5ed266a6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridSize: 10
-  radius: 2
+  gridSize: 20
+  radius: 1
+--- !u!114 &7872732159200106153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2141490514839504976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df20731aba6896542a4a32fe18a8ee5e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  springForce: 20
+  damping: 5
