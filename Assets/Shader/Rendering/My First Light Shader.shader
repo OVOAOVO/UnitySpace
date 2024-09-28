@@ -28,8 +28,13 @@ Shader "Custom/My First Lighting Shader"{
 
 			#pragma target 3.0
 
+			#pragma multi_compile _ SHADOWS_SCREEN
+			#pragma multi_compile _ VERTEXLIGHT_ON
+
 			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram
+
+			#define FORWARD_BASE_PASS
 
 			#include "My Lighting.cginc"
 
@@ -48,7 +53,7 @@ Shader "Custom/My First Lighting Shader"{
 
 			#pragma target 3.0
 
-			#pragma multi_compile _ VERTEXLIGHT_ON
+			#pragma multi_compile_fwdadd_fullshadows
 
 			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram
@@ -59,6 +64,25 @@ Shader "Custom/My First Lighting Shader"{
 
 			ENDCG
 			}
+
+	Pass {
+			Tags {
+				"LightMode" = "ShadowCaster"
+			}
+
+			CGPROGRAM
+
+			#pragma target 3.0
+
+			#pragma multi_compile_shadowcaster
+
+			#pragma vertex MyShadowVertexProgram
+			#pragma fragment MyShadowFragmentProgram
+
+			#include "My Shadows.cginc"
+
+			ENDCG
+		}
 
 		}
 }
