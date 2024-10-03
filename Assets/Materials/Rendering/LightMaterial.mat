@@ -12,7 +12,9 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
+  - _DETAIL_ALBEDO_MAP
   - _DETAIL_MASK
+  - _DETAIL_NORMAL_MAP
   - _EMISSION_MAP
   - _METALLIC_MAP
   - _OCCLUSION_MAP
