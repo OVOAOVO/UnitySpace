@@ -51,11 +51,17 @@ new ColorPickerHDRConfig(0f, 99f, 1f / 99f, 3f);
     {
         if (state)
         {
-            target.EnableKeyword(keyword);
+            foreach (Material m in editor.targets)
+            {
+                m.EnableKeyword(keyword);
+            }
         }
         else
         {
-            target.DisableKeyword(keyword);
+            foreach (Material m in editor.targets)
+            {
+                m.DisableKeyword(keyword);
+            }
         }
     }
     bool IsKeywordEnabled(string keyword)
@@ -79,17 +85,25 @@ new ColorPickerHDRConfig(0f, 99f, 1f / 99f, 3f);
         DoMetallic();
         DoSmoothness();
         DoNormals();
+        DoOcclusion();
         DoEmission();
+        DoDetailMask();
         editor.TextureScaleOffsetProperty(mainTex);
     }
 
     void DoNormals()
     {
         MaterialProperty map = FindProperty("_NormalMap");
+        Texture tex = map.textureValue;
+        EditorGUI.BeginChangeCheck();
         editor.TexturePropertySingleLine(
             MakeLabel(map), map,
-            map.textureValue ? FindProperty("_BumpScale") : null
+            tex ? FindProperty("_BumpScale") : null
         );
+        if (EditorGUI.EndChangeCheck() && tex != map.textureValue)
+        {
+            SetKeyword("_NORMAL_MAP", map.textureValue);
+        }
     }
 
     void DoMetallic()
@@ -141,9 +155,14 @@ new ColorPickerHDRConfig(0f, 99f, 1f / 99f, 3f);
         GUILayout.Label("Secondary Maps", EditorStyles.boldLabel);
 
         MaterialProperty detailTex = FindProperty("_DetailTex");
+        EditorGUI.BeginChangeCheck();
         editor.TexturePropertySingleLine(
             MakeLabel(detailTex, "Albedo (RGB) multiplied by 2"), detailTex
         );
+        if (EditorGUI.EndChangeCheck())
+        {
+            SetKeyword("_DETAIL_ALBEDO_MAP", detailTex.textureValue);
+        }
         DoSecondaryNormals();
         editor.TextureScaleOffsetProperty(detailTex);
     }
@@ -151,10 +170,15 @@ new ColorPickerHDRConfig(0f, 99f, 1f / 99f, 3f);
     void DoSecondaryNormals()
     {
         MaterialProperty map = FindProperty("_DetailNormalMap");
+        EditorGUI.BeginChangeCheck();
         editor.TexturePropertySingleLine(
             MakeLabel(map), map,
             map.textureValue ? FindProperty("_DetailBumpScale") : null
         );
+        if (EditorGUI.EndChangeCheck())
+        {
+            SetKeyword("_DETAIL_NORMAL_MAP", map.textureValue);
+        }
     }
 
     void DoEmission()
@@ -168,6 +192,32 @@ new ColorPickerHDRConfig(0f, 99f, 1f / 99f, 3f);
         if (EditorGUI.EndChangeCheck())
         {
             SetKeyword("_EMISSION_MAP", map.textureValue);
+        }
+    }
+
+    void DoOcclusion()
+    {
+        MaterialProperty map = FindProperty("_OcclusionMap");
+        EditorGUI.BeginChangeCheck();
+        editor.TexturePropertySingleLine(
+            MakeLabel(map, "Occlusion (G)"), map,
+            map.textureValue ? FindProperty("_OcclusionStrength") : null
+        );
+        if (EditorGUI.EndChangeCheck())
+        {
+            SetKeyword("_OCCLUSION_MAP", map.textureValue);
+        }
+    }
+    void DoDetailMask()
+    {
+        MaterialProperty mask = FindProperty("_DetailMask");
+        EditorGUI.BeginChangeCheck();
+        editor.TexturePropertySingleLine(
+            MakeLabel(mask, "Detail Mask (A)"), mask
+        );
+        if (EditorGUI.EndChangeCheck())
+        {
+            SetKeyword("_DETAIL_MASK", mask.textureValue);
         }
     }
 }
