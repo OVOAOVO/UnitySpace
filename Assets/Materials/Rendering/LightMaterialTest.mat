@@ -18,8 +18,7 @@ Material:
   - _EMISSION_MAP
   - _METALLIC_MAP
   - _OCCLUSION_MAP
-  - _RENDERING_TRANSPARENT
-  - _SEMITRANSPARENT_SHADOWS
+  - _RENDERING_FADE
   - _SMOOTHNESS_METALLIC
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -107,7 +106,7 @@ Material:
     - _Smoothness: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _SrcBlend: 1
+    - _SrcBlend: 5
     - _UVSec: 0
     - _ZWrite: 0
     m_Colors:

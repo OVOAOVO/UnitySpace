@@ -1,22 +1,20 @@
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
 #if !defined(MY_SHADOWS_INCLUDED)
 #define MY_SHADOWS_INCLUDED
 
 #include "UnityCG.cginc"
 
-#if SHADOWS_SEMITRANSPARENT || defined(_RENDERING_CUTOUT)
-	#if !defined(_SMOOTHNESS_ALBEDO)
-		#define SHADOWS_NEED_UV 1
-	#endif
+#if defined(_RENDERING_FADE) || defined(_RENDERING_TRANSPARENT)
+#if defined(_SEMITRANSPARENT_SHADOWS)
+#define SHADOWS_SEMITRANSPARENT 1
+#else
+#define _RENDERING_CUTOUT
+#endif
 #endif
 
-#if defined(_RENDERING_FADE) || defined(_RENDERING_TRANSPARENT)
-	#if defined(_SEMITRANSPARENT_SHADOWS)
-		#define SHADOWS_SEMITRANSPARENT 1
-	#else
-		#define _RENDERING_CUTOUT
-	#endif
+#if SHADOWS_SEMITRANSPARENT || defined(_RENDERING_CUTOUT)
+#if !defined(_SMOOTHNESS_ALBEDO)
+#define SHADOWS_NEED_UV 1
+#endif
 #endif
 
 float4 _Tint;
@@ -51,7 +49,7 @@ struct Interpolators
 #else
     float4 positions : SV_POSITION;
 #endif
-	
+
 #if SHADOWS_NEED_UV
 		float2 uv : TEXCOORD0;
 #endif
@@ -80,6 +78,7 @@ InterpolatorsVertex MyShadowVertexProgram(VertexData v)
     i.position = UnityClipSpaceShadowCasterPos(v.position.xyz, v.normal);
     i.position = UnityApplyLinearShadowBias(i.position);
 #endif
+
 #if SHADOWS_NEED_UV
 		i.uv = TRANSFORM_TEX(v.uv, _MainTex);
 #endif
@@ -89,15 +88,15 @@ InterpolatorsVertex MyShadowVertexProgram(VertexData v)
 float4 MyShadowFragmentProgram(Interpolators i) : SV_TARGET
 {
     float alpha = GetAlpha(i);
-	#if defined(_RENDERING_CUTOUT)
+#if defined(_RENDERING_CUTOUT)
 		clip(alpha - _AlphaCutoff);
-	#endif
-	
-	#if SHADOWS_SEMITRANSPARENT
+#endif
+
+#if SHADOWS_SEMITRANSPARENT
 		float dither =
-			tex3D(_DitherMaskLOD, float3(i.vpos.xy * 0.01, alpha * 0.9375)).a;
+			tex3D(_DitherMaskLOD, float3(i.vpos.xy * 0.25, alpha * 0.9375)).a;
 		clip(dither - 0.01);
-	#endif
+#endif
 	
 #if defined(SHADOWS_CUBE)
 		float depth = length(i.lightVec) + unity_LightShadowBias.x;
@@ -107,4 +106,9 @@ float4 MyShadowFragmentProgram(Interpolators i) : SV_TARGET
     return 0;
 #endif
 }
+
+#if defined(SHADOWS_CUBE)
+
+#endif
+
 #endif

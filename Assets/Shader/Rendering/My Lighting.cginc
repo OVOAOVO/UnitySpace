@@ -1,10 +1,3 @@
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-
 #if !defined(MY_LIGHTING_INCLUDED)
 #define MY_LIGHTING_INCLUDED
 
@@ -14,6 +7,7 @@
 float4 _Tint;
 sampler2D _MainTex, _DetailTex, _DetailMask;
 float4 _MainTex_ST, _DetailTex_ST;
+
 sampler2D _NormalMap, _DetailNormalMap;
 float _BumpScale, _DetailBumpScale;
 
@@ -21,13 +15,21 @@ sampler2D _MetallicMap;
 float _Metallic;
 float _Smoothness;
 
-sampler2D _EmissionMap;
-float3 _Emission;
-
 sampler2D _OcclusionMap;
 float _OcclusionStrength;
 
+sampler2D _EmissionMap;
+float3 _Emission;
+
 float _AlphaCutoff;
+
+struct VertexData
+{
+    float4 vertex : POSITION;
+    float3 normal : NORMAL;
+    float4 tangent : TANGENT;
+    float2 uv : TEXCOORD0;
+};
 
 struct Interpolators
 {
@@ -50,48 +52,6 @@ struct Interpolators
 		float3 vertexLightColor : TEXCOORD6;
 #endif
 };
-
-float GetMetallic(Interpolators i)
-{
-#if defined(_METALLIC_MAP)
-		return tex2D(_MetallicMap, i.uv.xy).r;
-#else
-    return _Metallic;
-#endif
-}
-
-float GetSmoothness(Interpolators i)
-{
-    float smoothness = 1;
-#if defined(_SMOOTHNESS_ALBEDO)
-		smoothness = tex2D(_MainTex, i.uv.xy).a;
-#elif defined(_SMOOTHNESS_METALLIC) && defined(_METALLIC_MAP)
-		smoothness = tex2D(_MetallicMap, i.uv.xy).a;
-#endif
-    return smoothness * _Smoothness;
-}
-
-float3 GetEmission(Interpolators i)
-{
-#if defined(FORWARD_BASE_PASS)
-#if defined(_EMISSION_MAP)
-			return tex2D(_EmissionMap, i.uv.xy) * _Emission;
-#else
-			return _Emission;
-#endif
-#else
-    return 0;
-#endif
-}
-
-float GetOcclusion(Interpolators i)
-{
-#if defined(_OCCLUSION_MAP)
-		return lerp(1, tex2D(_OcclusionMap, i.uv.xy).g, _OcclusionStrength);
-#else
-    return 1;
-#endif
-}
 
 float GetDetailMask(Interpolators i)
 {
@@ -137,14 +97,48 @@ float3 GetTangentSpaceNormal(Interpolators i)
 #endif
     return normal;
 }
-			
-struct VertexData
+
+float GetMetallic(Interpolators i)
 {
-    float4 vertex : POSITION;
-    float3 normal : NORMAL;
-    float4 tangent : TANGENT;
-    float2 uv : TEXCOORD0;
-};
+#if defined(_METALLIC_MAP)
+		return tex2D(_MetallicMap, i.uv.xy).r;
+#else
+    return _Metallic;
+#endif
+}
+
+float GetSmoothness(Interpolators i)
+{
+    float smoothness = 1;
+#if defined(_SMOOTHNESS_ALBEDO)
+		smoothness = tex2D(_MainTex, i.uv.xy).a;
+#elif defined(_SMOOTHNESS_METALLIC) && defined(_METALLIC_MAP)
+		smoothness = tex2D(_MetallicMap, i.uv.xy).a;
+#endif
+    return smoothness * _Smoothness;
+}
+
+float GetOcclusion(Interpolators i)
+{
+#if defined(_OCCLUSION_MAP)
+		return lerp(1, tex2D(_OcclusionMap, i.uv.xy).g, _OcclusionStrength);
+#else
+    return 1;
+#endif
+}
+
+float3 GetEmission(Interpolators i)
+{
+#if defined(FORWARD_BASE_PASS)
+#if defined(_EMISSION_MAP)
+			return tex2D(_EmissionMap, i.uv.xy) * _Emission;
+#else
+			return _Emission;
+#endif
+#else
+    return 0;
+#endif
+}
 
 void ComputeVertexLightColor(inout Interpolators i)
 {
@@ -177,11 +171,12 @@ Interpolators MyVertexProgram(VertexData v)
     i.tangent = UnityObjectToWorldDir(v.tangent.xyz);
     i.binormal = CreateBinormal(i.normal, i.tangent, v.tangent.w);
 #endif
-		
+
     i.uv.xy = TRANSFORM_TEX(v.uv, _MainTex);
     i.uv.zw = TRANSFORM_TEX(v.uv, _DetailTex);
-    
+
     TRANSFER_SHADOW(i);
+
     ComputeVertexLightColor(i);
     return i;
 }
@@ -189,6 +184,7 @@ Interpolators MyVertexProgram(VertexData v)
 UnityLight CreateLight(Interpolators i)
 {
     UnityLight light;
+
 #if defined(POINT) || defined(POINT_COOKIE) || defined(SPOT)
 		light.dir = normalize(_WorldSpaceLightPos0.xyz - i.worldPos);
 #else
@@ -228,8 +224,8 @@ UnityIndirect CreateIndirectLight(Interpolators i, float3 viewDir)
 #if defined(VERTEXLIGHT_ON)
 		indirectLight.diffuse = i.vertexLightColor;
 #endif
-    
-	#if defined(FORWARD_BASE_PASS)
+
+#if defined(FORWARD_BASE_PASS)
 		indirectLight.diffuse += max(0, ShadeSH9(float4(i.normal, 1)));
 		float3 reflectionDir = reflect(-viewDir, i.normal);
 		Unity_GlossyEnvironmentData envData;
@@ -242,12 +238,12 @@ UnityIndirect CreateIndirectLight(Interpolators i, float3 viewDir)
 		float3 probe0 = Unity_GlossyEnvironment(
 			UNITY_PASS_TEXCUBE(unity_SpecCube0), unity_SpecCube0_HDR, envData
 		);
-	envData.reflUVW = BoxProjection(
+		envData.reflUVW = BoxProjection(
 			reflectionDir, i.worldPos,
 			unity_SpecCube1_ProbePosition,
 			unity_SpecCube1_BoxMin, unity_SpecCube1_BoxMax
 		);
-		#if UNITY_SPECCUBE_BLENDING
+#if UNITY_SPECCUBE_BLENDING
 			float interpolator = unity_SpecCube0_BoxMin.w;
 			UNITY_BRANCH
 			if (interpolator < 0.99999) {
@@ -260,21 +256,21 @@ UnityIndirect CreateIndirectLight(Interpolators i, float3 viewDir)
 			else {
 				indirectLight.specular = probe0;
 			}
-		#else
+#else
 			indirectLight.specular = probe0;
-		#endif
+#endif
+
 		float occlusion = GetOcclusion(i);
 		indirectLight.diffuse *= occlusion;
 		indirectLight.specular *= occlusion;
-	#endif
-    
+#endif
+
     return indirectLight;
 }
 
 void InitializeFragmentNormal(inout Interpolators i)
 {
     float3 tangentSpaceNormal = GetTangentSpaceNormal(i);
-
 #if defined(BINORMAL_PER_FRAGMENT)
 		float3 binormal = CreateBinormal(i.normal, i.tangent.xyz, i.tangent.w);
 #else
@@ -291,11 +287,12 @@ void InitializeFragmentNormal(inout Interpolators i)
 float4 MyFragmentProgram(Interpolators i) : SV_TARGET
 {
     float alpha = GetAlpha(i);
-	#if defined(_RENDERING_CUTOUT)
+#if defined(_RENDERING_CUTOUT)
 		clip(alpha - _AlphaCutoff);
-	#endif
+#endif
 
     InitializeFragmentNormal(i);
+
     float3 viewDir = normalize(_WorldSpaceCameraPos - i.worldPos);
 
     float3 specularTint;
@@ -307,7 +304,7 @@ float4 MyFragmentProgram(Interpolators i) : SV_TARGET
 		albedo *= alpha;
 		alpha = 1 - oneMinusReflectivity + alpha * oneMinusReflectivity;
 #endif
-    
+
     float4 color = UNITY_BRDF_PBS(
 		albedo, specularTint,
 		oneMinusReflectivity, GetSmoothness(i),
