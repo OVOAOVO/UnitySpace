@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: LightMaterial
+  m_Name: LightMaterialTest
   m_Shader: {fileID: 4800000, guid: 76894faa0dadbf44bbc276c9648170ba, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -18,7 +18,8 @@ Material:
   - _EMISSION_MAP
   - _METALLIC_MAP
   - _OCCLUSION_MAP
-  - _RENDERING_FADE
+  - _RENDERING_TRANSPARENT
+  - _SEMITRANSPARENT_SHADOWS
   - _SMOOTHNESS_METALLIC
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -61,7 +62,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 3e6577d286c6c5b4faa9b8e12a4d17ca, type: 3}
+        m_Texture: {fileID: 2800000, guid: 5be9515fcab51e54e80a950942987815, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -106,7 +107,7 @@ Material:
     - _Smoothness: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _SrcBlend: 5
+    - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 0
     m_Colors:

@@ -321,5 +321,29 @@ new ColorPickerHDRConfig(0f, 99f, 1f / 99f, 3f);
                 m.SetInt("_ZWrite", settings.zWrite ? 1 : 0);
             }
         }
+
+        if (mode == RenderingMode.Fade || mode == RenderingMode.Transparent)
+        {
+            DoSemitransparentShadows();
+        }
+    }
+
+    void DoSemitransparentShadows()
+    {
+        EditorGUI.BeginChangeCheck();
+        bool semitransparentShadows =
+            EditorGUILayout.Toggle(
+                MakeLabel("Semitransp. Shadows", "Semitransparent Shadows"),
+                IsKeywordEnabled("_SEMITRANSPARENT_SHADOWS")
+            );
+        if (EditorGUI.EndChangeCheck())
+        {
+            SetKeyword("_SEMITRANSPARENT_SHADOWS", semitransparentShadows);
+        }
+
+        if (!semitransparentShadows)
+        {
+            shouldShowAlphaCutoff = true;
+        }
     }
 }

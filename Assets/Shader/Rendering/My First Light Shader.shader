@@ -116,6 +116,10 @@ Shader "Custom/My First Lighting Shader"{
 
 			#pragma vertex MyShadowVertexProgram
 			#pragma fragment MyShadowFragmentProgram
+			#pragma shader_feature _RENDERING_CUTOUT
+			#pragma shader_feature _SMOOTHNESS_ALBEDO
+			#pragma shader_feature _ _RENDERING_CUTOUT _RENDERING_FADE _RENDERING_TRANSPARENT
+			#pragma shader_feature _SEMITRANSPARENT_SHADOWS
 
 			#include "My Shadows.cginc"
 
