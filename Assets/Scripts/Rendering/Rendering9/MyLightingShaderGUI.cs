@@ -4,10 +4,6 @@ using UnityEditor;
 
 public class MyLightingShaderGUI : ShaderGUI
 {
-    Material target;
-    MaterialEditor editor;
-    MaterialProperty[] properties;
-    static GUIContent staticLabel = new GUIContent();
 
     enum SmoothnessSource
     {
@@ -18,7 +14,6 @@ public class MyLightingShaderGUI : ShaderGUI
     {
         Opaque, Cutout, Fade, Transparent
     }
-    bool shouldShowAlphaCutoff;
 
     struct RenderingSettings
     {
@@ -59,8 +54,15 @@ public class MyLightingShaderGUI : ShaderGUI
         };
     }
 
+    static GUIContent staticLabel = new GUIContent();
+
     static ColorPickerHDRConfig emissionConfig =
-new ColorPickerHDRConfig(0f, 99f, 1f / 99f, 3f);
+        new ColorPickerHDRConfig(0f, 99f, 1f / 99f, 3f);
+
+    Material target;
+    MaterialEditor editor;
+    MaterialProperty[] properties;
+    bool shouldShowAlphaCutoff;
 
     public override void OnGUI(
         MaterialEditor editor, MaterialProperty[] properties
@@ -73,51 +75,71 @@ new ColorPickerHDRConfig(0f, 99f, 1f / 99f, 3f);
         DoMain();
         DoSecondary();
     }
-    MaterialProperty FindProperty(string name)
-    {
-        return FindProperty(name, properties);
-    }
 
-    static GUIContent MakeLabel(string text, string tooltip = null)
+    void DoRenderingMode()
     {
-        staticLabel.text = text;
-        staticLabel.tooltip = tooltip;
-        return staticLabel;
-    }
-
-    static GUIContent MakeLabel(
-    MaterialProperty property, string tooltip = null
-)
-    {
-        staticLabel.text = property.displayName;
-        staticLabel.tooltip = tooltip;
-        return staticLabel;
-    }
-
-    void SetKeyword(string keyword, bool state)
-    {
-        if (state)
+        RenderingMode mode = RenderingMode.Opaque;
+        shouldShowAlphaCutoff = false;
+        if (IsKeywordEnabled("_RENDERING_CUTOUT"))
         {
+            mode = RenderingMode.Cutout;
+            shouldShowAlphaCutoff = true;
+        }
+        else if (IsKeywordEnabled("_RENDERING_FADE"))
+        {
+            mode = RenderingMode.Fade;
+        }
+        else if (IsKeywordEnabled("_RENDERING_TRANSPARENT"))
+        {
+            mode = RenderingMode.Transparent;
+        }
+
+        EditorGUI.BeginChangeCheck();
+        mode = (RenderingMode)EditorGUILayout.EnumPopup(
+            MakeLabel("Rendering Mode"), mode
+        );
+        if (EditorGUI.EndChangeCheck())
+        {
+            RecordAction("Rendering Mode");
+            SetKeyword("_RENDERING_CUTOUT", mode == RenderingMode.Cutout);
+            SetKeyword("_RENDERING_FADE", mode == RenderingMode.Fade);
+            SetKeyword(
+                "_RENDERING_TRANSPARENT", mode == RenderingMode.Transparent
+            );
+
+            RenderingSettings settings = RenderingSettings.modes[(int)mode];
             foreach (Material m in editor.targets)
             {
-                m.EnableKeyword(keyword);
+                m.renderQueue = (int)settings.queue;
+                m.SetOverrideTag("RenderType", settings.renderType);
+                m.SetInt("_SrcBlend", (int)settings.srcBlend);
+                m.SetInt("_DstBlend", (int)settings.dstBlend);
+                m.SetInt("_ZWrite", settings.zWrite ? 1 : 0);
             }
         }
-        else
+
+        if (mode == RenderingMode.Fade || mode == RenderingMode.Transparent)
         {
-            foreach (Material m in editor.targets)
-            {
-                m.DisableKeyword(keyword);
-            }
+            DoSemitransparentShadows();
         }
     }
-    bool IsKeywordEnabled(string keyword)
+
+    void DoSemitransparentShadows()
     {
-        return target.IsKeywordEnabled(keyword);
-    }
-    void RecordAction(string label)
-    {
-        editor.RegisterPropertyChangeUndo(label);
+        EditorGUI.BeginChangeCheck();
+        bool semitransparentShadows =
+            EditorGUILayout.Toggle(
+                MakeLabel("Semitransp. Shadows", "Semitransparent Shadows"),
+                IsKeywordEnabled("_SEMITRANSPARENT_SHADOWS")
+            );
+        if (EditorGUI.EndChangeCheck())
+        {
+            SetKeyword("_SEMITRANSPARENT_SHADOWS", semitransparentShadows);
+        }
+        if (!semitransparentShadows)
+        {
+            shouldShowAlphaCutoff = true;
+        }
     }
 
     void DoMain()
@@ -125,10 +147,10 @@ new ColorPickerHDRConfig(0f, 99f, 1f / 99f, 3f);
         GUILayout.Label("Main Maps", EditorStyles.boldLabel);
 
         MaterialProperty mainTex = FindProperty("_MainTex");
-
         editor.TexturePropertySingleLine(
-            MakeLabel(mainTex, "Albedo (RGB)"), mainTex, FindProperty("_Tint")
+            MakeLabel(mainTex, "Albedo (RGB)"), mainTex, FindProperty("_Color")
         );
+
         if (shouldShowAlphaCutoff)
         {
             DoAlphaCutoff();
@@ -140,6 +162,14 @@ new ColorPickerHDRConfig(0f, 99f, 1f / 99f, 3f);
         DoEmission();
         DoDetailMask();
         editor.TextureScaleOffsetProperty(mainTex);
+    }
+
+    void DoAlphaCutoff()
+    {
+        MaterialProperty slider = FindProperty("_Cutoff");
+        EditorGUI.indentLevel += 2;
+        editor.ShaderProperty(slider, MakeLabel(slider));
+        EditorGUI.indentLevel -= 2;
     }
 
     void DoNormals()
@@ -160,12 +190,13 @@ new ColorPickerHDRConfig(0f, 99f, 1f / 99f, 3f);
     void DoMetallic()
     {
         MaterialProperty map = FindProperty("_MetallicMap");
+        Texture tex = map.textureValue;
         EditorGUI.BeginChangeCheck();
         editor.TexturePropertySingleLine(
             MakeLabel(map, "Metallic (R)"), map,
-            map.textureValue ? null : FindProperty("_Metallic")
+            tex ? null : FindProperty("_Metallic")
         );
-        if (EditorGUI.EndChangeCheck())
+        if (EditorGUI.EndChangeCheck() && tex != map.textureValue)
         {
             SetKeyword("_METALLIC_MAP", map.textureValue);
         }
@@ -201,6 +232,58 @@ new ColorPickerHDRConfig(0f, 99f, 1f / 99f, 3f);
         EditorGUI.indentLevel -= 3;
     }
 
+    void DoOcclusion()
+    {
+        MaterialProperty map = FindProperty("_OcclusionMap");
+        Texture tex = map.textureValue;
+        EditorGUI.BeginChangeCheck();
+        editor.TexturePropertySingleLine(
+            MakeLabel(map, "Occlusion (G)"), map,
+            tex ? FindProperty("_OcclusionStrength") : null
+        );
+        if (EditorGUI.EndChangeCheck() && tex != map.textureValue)
+        {
+            SetKeyword("_OCCLUSION_MAP", map.textureValue);
+        }
+    }
+
+    void DoEmission()
+    {
+        MaterialProperty map = FindProperty("_EmissionMap");
+        Texture tex = map.textureValue;
+        EditorGUI.BeginChangeCheck();
+        editor.TexturePropertyWithHDRColor(
+            MakeLabel(map, "Emission (RGB)"), map, FindProperty("_Emission"),
+            emissionConfig, false
+        );
+        if (EditorGUI.EndChangeCheck())
+        {
+            if (tex != map.textureValue)
+            {
+                SetKeyword("_EMISSION_MAP", map.textureValue);
+            }
+
+            foreach (Material m in editor.targets)
+            {
+                m.globalIlluminationFlags =
+                    MaterialGlobalIlluminationFlags.BakedEmissive;
+            }
+        }
+    }
+
+    void DoDetailMask()
+    {
+        MaterialProperty mask = FindProperty("_DetailMask");
+        EditorGUI.BeginChangeCheck();
+        editor.TexturePropertySingleLine(
+            MakeLabel(mask, "Detail Mask (A)"), mask
+        );
+        if (EditorGUI.EndChangeCheck())
+        {
+            SetKeyword("_DETAIL_MASK", mask.textureValue);
+        }
+    }
+
     void DoSecondary()
     {
         GUILayout.Label("Secondary Maps", EditorStyles.boldLabel);
@@ -221,129 +304,64 @@ new ColorPickerHDRConfig(0f, 99f, 1f / 99f, 3f);
     void DoSecondaryNormals()
     {
         MaterialProperty map = FindProperty("_DetailNormalMap");
+        Texture tex = map.textureValue;
         EditorGUI.BeginChangeCheck();
         editor.TexturePropertySingleLine(
             MakeLabel(map), map,
-            map.textureValue ? FindProperty("_DetailBumpScale") : null
+            tex ? FindProperty("_DetailBumpScale") : null
         );
-        if (EditorGUI.EndChangeCheck())
+        if (EditorGUI.EndChangeCheck() && tex != map.textureValue)
         {
             SetKeyword("_DETAIL_NORMAL_MAP", map.textureValue);
         }
     }
 
-    void DoEmission()
+    MaterialProperty FindProperty(string name)
     {
-        MaterialProperty map = FindProperty("_EmissionMap");
-        EditorGUI.BeginChangeCheck();
-        editor.TexturePropertyWithHDRColor(
-            MakeLabel("Emission (RGB)"), map, FindProperty("_Emission"),
-            emissionConfig, false
-        );
-        if (EditorGUI.EndChangeCheck())
-        {
-            SetKeyword("_EMISSION_MAP", map.textureValue);
-        }
+        return FindProperty(name, properties);
     }
 
-    void DoOcclusion()
+    static GUIContent MakeLabel(string text, string tooltip = null)
     {
-        MaterialProperty map = FindProperty("_OcclusionMap");
-        EditorGUI.BeginChangeCheck();
-        editor.TexturePropertySingleLine(
-            MakeLabel(map, "Occlusion (G)"), map,
-            map.textureValue ? FindProperty("_OcclusionStrength") : null
-        );
-        if (EditorGUI.EndChangeCheck())
-        {
-            SetKeyword("_OCCLUSION_MAP", map.textureValue);
-        }
+        staticLabel.text = text;
+        staticLabel.tooltip = tooltip;
+        return staticLabel;
     }
 
-    void DoDetailMask()
+    static GUIContent MakeLabel(
+        MaterialProperty property, string tooltip = null
+    )
     {
-        MaterialProperty mask = FindProperty("_DetailMask");
-        EditorGUI.BeginChangeCheck();
-        editor.TexturePropertySingleLine(
-            MakeLabel(mask, "Detail Mask (A)"), mask
-        );
-        if (EditorGUI.EndChangeCheck())
-        {
-            SetKeyword("_DETAIL_MASK", mask.textureValue);
-        }
+        staticLabel.text = property.displayName;
+        staticLabel.tooltip = tooltip;
+        return staticLabel;
     }
 
-    void DoAlphaCutoff()
+    void SetKeyword(string keyword, bool state)
     {
-        MaterialProperty slider = FindProperty("_AlphaCutoff");
-        EditorGUI.indentLevel += 2;
-        editor.ShaderProperty(slider, MakeLabel(slider));
-        EditorGUI.indentLevel -= 2;
-    }
-
-    void DoRenderingMode()
-    {
-        RenderingMode mode = RenderingMode.Opaque;
-        shouldShowAlphaCutoff = false;
-        if (IsKeywordEnabled("_RENDERING_CUTOUT"))
+        if (state)
         {
-            mode = RenderingMode.Cutout;
-            shouldShowAlphaCutoff = true;
-        }
-        else if (IsKeywordEnabled("_RENDERING_FADE"))
-        {
-            mode = RenderingMode.Fade;
-        }
-        else if (IsKeywordEnabled("_RENDERING_TRANSPARENT"))
-        {
-            mode = RenderingMode.Transparent;
-        }
-
-        EditorGUI.BeginChangeCheck();
-        mode = (RenderingMode)EditorGUILayout.EnumPopup(
-            MakeLabel("Rendering Mode"), mode
-        );
-        if (EditorGUI.EndChangeCheck())
-        {
-            RecordAction("Rendering Mode");
-            SetKeyword("_RENDERING_CUTOUT", mode == RenderingMode.Cutout);
-            SetKeyword("_RENDERING_FADE", mode == RenderingMode.Fade);
-            SetKeyword(
-                "_RENDERING_TRANSPARENT", mode == RenderingMode.Transparent
-            );
-            RenderingSettings settings = RenderingSettings.modes[(int)mode];
             foreach (Material m in editor.targets)
             {
-                m.renderQueue = (int)settings.queue;
-                m.SetOverrideTag("RenderType", settings.renderType);
-                m.SetInt("_SrcBlend", (int)settings.srcBlend);
-                m.SetInt("_DstBlend", (int)settings.dstBlend);
-                m.SetInt("_ZWrite", settings.zWrite ? 1 : 0);
+                m.EnableKeyword(keyword);
             }
         }
-
-        if (mode == RenderingMode.Fade || mode == RenderingMode.Transparent)
+        else
         {
-            DoSemitransparentShadows();
+            foreach (Material m in editor.targets)
+            {
+                m.DisableKeyword(keyword);
+            }
         }
     }
 
-    void DoSemitransparentShadows()
+    bool IsKeywordEnabled(string keyword)
     {
-        EditorGUI.BeginChangeCheck();
-        bool semitransparentShadows =
-            EditorGUILayout.Toggle(
-                MakeLabel("Semitransp. Shadows", "Semitransparent Shadows"),
-                IsKeywordEnabled("_SEMITRANSPARENT_SHADOWS")
-            );
-        if (EditorGUI.EndChangeCheck())
-        {
-            SetKeyword("_SEMITRANSPARENT_SHADOWS", semitransparentShadows);
-        }
+        return target.IsKeywordEnabled(keyword);
+    }
 
-        if (!semitransparentShadows)
-        {
-            shouldShowAlphaCutoff = true;
-        }
+    void RecordAction(string label)
+    {
+        editor.RegisterPropertyChangeUndo(label);
     }
 }
