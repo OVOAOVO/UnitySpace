@@ -74,6 +74,7 @@ public class MyLightingShaderGUI : ShaderGUI
         DoRenderingMode();
         DoMain();
         DoSecondary();
+        DoAdvanced();
     }
 
     void DoRenderingMode()
@@ -315,6 +316,13 @@ public class MyLightingShaderGUI : ShaderGUI
         {
             SetKeyword("_DETAIL_NORMAL_MAP", map.textureValue);
         }
+    }
+
+    void DoAdvanced()
+    {
+        GUILayout.Label("Advanced Options", EditorStyles.boldLabel);
+
+        editor.EnableInstancingField();
     }
 
     MaterialProperty FindProperty(string name)
