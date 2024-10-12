@@ -11,6 +11,9 @@ Shader "Custom/My First Lighting Shader" {
 		[Gamma] _Metallic ("Metallic", Range(0, 1)) = 0
 		_Smoothness ("Smoothness", Range(0, 1)) = 0.1
 
+		[NoScaleOffset] _ParallaxMap ("Parallax", 2D) = "black" {}
+		_ParallaxStrength ("Parallax Strength", Range(0, 0.1)) = 0
+
 		[NoScaleOffset] _OcclusionMap ("Occlusion", 2D) = "white" {}
 		_OcclusionStrength("Occlusion Strength", Range(0, 1)) = 1
 
@@ -33,6 +36,13 @@ Shader "Custom/My First Lighting Shader" {
 
 	#define BINORMAL_PER_FRAGMENT
 	#define FOG_DISTANCE
+	#define PARALLAX_BIAS 0
+//	#define PARALLAX_OFFSET_LIMITING
+	#define PARALLAX_RAYMARCHING_STEPS 10
+	#define PARALLAX_RAYMARCHING_INTERPOLATE
+	#define PARALLAX_RAYMARCHING_SEARCH_STEPS 3
+	#define PARALLAX_SUPPORT_SCALED_DYNAMIC_BATCHING
+	#define PARALLAX_FUNCTION ParallaxRaymarching
 
 	ENDCG
 
@@ -58,6 +68,7 @@ Shader "Custom/My First Lighting Shader" {
 			#pragma shader_feature _DETAIL_MASK
 			#pragma shader_feature _DETAIL_ALBEDO_MAP
 			#pragma shader_feature _DETAIL_NORMAL_MAP
+			#pragma shader_feature _PARALLAX_MAP
 
 			#pragma multi_compile_fwdbase
 			#pragma multi_compile_fog
@@ -94,6 +105,7 @@ Shader "Custom/My First Lighting Shader" {
 			#pragma shader_feature _DETAIL_MASK
 			#pragma shader_feature _DETAIL_ALBEDO_MAP
 			#pragma shader_feature _DETAIL_NORMAL_MAP
+			#pragma shader_feature _PARALLAX_MAP
 
 			#pragma multi_compile_fwdadd_fullshadows
 			#pragma multi_compile_fog
@@ -152,6 +164,7 @@ Shader "Custom/My First Lighting Shader" {
 			#pragma shader_feature _DETAIL_MASK
 			#pragma shader_feature _DETAIL_ALBEDO_MAP
 			#pragma shader_feature _DETAIL_NORMAL_MAP
+			#pragma shader_feature _PARALLAX_MAP
 			
 			#pragma multi_compile_prepassfinal
 			#pragma multi_compile _ LOD_FADE_CROSSFADE
