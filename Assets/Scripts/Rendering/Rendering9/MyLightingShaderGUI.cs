@@ -72,6 +72,10 @@ public class MyLightingShaderGUI : ShaderGUI
         this.editor = editor;
         this.properties = properties;
         DoRenderingMode();
+        if (target.HasProperty("_WireframeColor"))
+        {
+            DoWireframe();
+        }
         DoMain();
         DoSecondary();
         DoAdvanced();
@@ -234,6 +238,21 @@ public class MyLightingShaderGUI : ShaderGUI
         EditorGUI.indentLevel -= 3;
     }
 
+    void DoParallax()
+    {
+        MaterialProperty map = FindProperty("_ParallaxMap");
+        Texture tex = map.textureValue;
+        EditorGUI.BeginChangeCheck();
+        editor.TexturePropertySingleLine(
+            MakeLabel(map, "Parallax (G)"), map,
+            tex ? FindProperty("_ParallaxStrength") : null
+        );
+        if (EditorGUI.EndChangeCheck() && tex != map.textureValue)
+        {
+            SetKeyword("_PARALLAX_MAP", map.textureValue);
+        }
+    }
+
     void DoOcclusion()
     {
         MaterialProperty map = FindProperty("_OcclusionMap");
@@ -326,19 +345,23 @@ public class MyLightingShaderGUI : ShaderGUI
         editor.EnableInstancingField();
     }
 
-    void DoParallax()
+    void DoWireframe()
     {
-        MaterialProperty map = FindProperty("_ParallaxMap");
-        Texture tex = map.textureValue;
-        EditorGUI.BeginChangeCheck();
-        editor.TexturePropertySingleLine(
-            MakeLabel(map, "Parallax (G)"), map,
-            tex ? FindProperty("_ParallaxStrength") : null
+        GUILayout.Label("Wireframe", EditorStyles.boldLabel);
+        EditorGUI.indentLevel += 2;
+        editor.ShaderProperty(
+            FindProperty("_WireframeColor"),
+            MakeLabel("Color")
         );
-        if (EditorGUI.EndChangeCheck() && tex != map.textureValue)
-        {
-            SetKeyword("_PARALLAX_MAP", map.textureValue);
-        }
+        editor.ShaderProperty(
+            FindProperty("_WireframeSmoothing"),
+            MakeLabel("Smoothing", "In screen space.")
+        );
+        editor.ShaderProperty(
+            FindProperty("_WireframeThickness"),
+            MakeLabel("Thickness", "In screen space.")
+        );
+        EditorGUI.indentLevel -= 2;
     }
 
     MaterialProperty FindProperty(string name)

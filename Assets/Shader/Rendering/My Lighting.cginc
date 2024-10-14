@@ -379,7 +379,7 @@ void ApplySubtractiveLighting(
 #endif
 }
 
-void ComputeVertexLightColor(inout Interpolators i)
+void ComputeVertexLightColor(inout InterpolatorsVertex i)
 {
 #if defined(VERTEXLIGHT_ON)
 		i.vertexLightColor = Shade4PointLights(
