@@ -1,4 +1,4 @@
-Shader "Custom/Tessellation" {
+Shader "Custom/Flat Wireframe" {
 
 	Properties {
 		_Color ("Tint", Color) = (1, 1, 1, 1)
@@ -12,7 +12,7 @@ Shader "Custom/Tessellation" {
 		_Smoothness ("Smoothness", Range(0, 1)) = 0.1
 
 		[NoScaleOffset] _ParallaxMap ("Parallax", 2D) = "black" {}
-		_ParallaxStrength ("Parallax Strength", Range(0, 1)) = 0
+		_ParallaxStrength ("Parallax Strength", Range(0, 0.1)) = 0
 
 		[NoScaleOffset] _OcclusionMap ("Occlusion", 2D) = "white" {}
 		_OcclusionStrength ("Occlusion Strength", Range(0, 1)) = 1
@@ -34,9 +34,6 @@ Shader "Custom/Tessellation" {
 		[HideInInspector] _SrcBlend ("_SrcBlend", Float) = 1
 		[HideInInspector] _DstBlend ("_DstBlend", Float) = 0
 		[HideInInspector] _ZWrite ("_ZWrite", Float) = 1
-
-		_TessellationUniform ("Tessellation Uniform", Range(1, 64)) = 1
-		_TessellationEdgeLength ("Tessellation Edge Length", Range(5, 100)) = 50
 	}
 
 	CGINCLUDE
@@ -44,7 +41,13 @@ Shader "Custom/Tessellation" {
 	#define BINORMAL_PER_FRAGMENT
 	#define FOG_DISTANCE
 
-	#define VERTEX_DISPLACEMENT_INSTEAD_OF_PARALLAX
+	#define PARALLAX_BIAS 0
+//	#define PARALLAX_OFFSET_LIMITING
+	#define PARALLAX_RAYMARCHING_STEPS 10
+	#define PARALLAX_RAYMARCHING_INTERPOLATE
+//	#define PARALLAX_RAYMARCHING_SEARCH_STEPS 3
+	#define PARALLAX_FUNCTION ParallaxRaymarching
+	#define PARALLAX_SUPPORT_SCALED_DYNAMIC_BATCHING
 
 	ENDCG
 
@@ -59,7 +62,7 @@ Shader "Custom/Tessellation" {
 
 			CGPROGRAM
 
-			#pragma target 4.6
+			#pragma target 4.0
 
 			#pragma shader_feature _ _RENDERING_CUTOUT _RENDERING_FADE _RENDERING_TRANSPARENT
 			#pragma shader_feature _METALLIC_MAP
@@ -71,23 +74,21 @@ Shader "Custom/Tessellation" {
 			#pragma shader_feature _DETAIL_MASK
 			#pragma shader_feature _DETAIL_ALBEDO_MAP
 			#pragma shader_feature _DETAIL_NORMAL_MAP
-			#pragma shader_feature _TESSELLATION_EDGE
 
 			#pragma multi_compile _ LOD_FADE_CROSSFADE
 
 			#pragma multi_compile_fwdbase
 			#pragma multi_compile_fog
+			#pragma multi_compile_instancing
+			#pragma instancing_options lodfade force_same_maxcount_for_gl
 
-			#pragma vertex MyTessellationVertexProgram
+			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram
-			#pragma hull MyHullProgram
-			#pragma domain MyDomainProgram
 			#pragma geometry MyGeometryProgram
 
 			#define FORWARD_BASE_PASS
 
 			#include "My FlatWireframe.cginc"
-			#include "My Tessellation.cginc"
 
 			ENDCG
 		}
@@ -102,7 +103,7 @@ Shader "Custom/Tessellation" {
 
 			CGPROGRAM
 
-			#pragma target 4.6
+			#pragma target 4.0
 
 			#pragma shader_feature _ _RENDERING_CUTOUT _RENDERING_FADE _RENDERING_TRANSPARENT
 			#pragma shader_feature _METALLIC_MAP
@@ -112,21 +113,17 @@ Shader "Custom/Tessellation" {
 			#pragma shader_feature _DETAIL_MASK
 			#pragma shader_feature _DETAIL_ALBEDO_MAP
 			#pragma shader_feature _DETAIL_NORMAL_MAP
-			#pragma shader_feature _TESSELLATION_EDGE
 
 			#pragma multi_compile _ LOD_FADE_CROSSFADE
 
 			#pragma multi_compile_fwdadd_fullshadows
 			#pragma multi_compile_fog
 			
-			#pragma vertex MyTessellationVertexProgram
+			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram
-			#pragma hull MyHullProgram
-			#pragma domain MyDomainProgram
 			#pragma geometry MyGeometryProgram
 
 			#include "My FlatWireframe.cginc"
-			#include "My Tessellation.cginc"
 
 			ENDCG
 		}
@@ -138,7 +135,7 @@ Shader "Custom/Tessellation" {
 
 			CGPROGRAM
 
-			#pragma target 4.6
+			#pragma target 4.0
 			#pragma exclude_renderers nomrt
 
 			#pragma shader_feature _ _RENDERING_CUTOUT
@@ -151,22 +148,20 @@ Shader "Custom/Tessellation" {
 			#pragma shader_feature _DETAIL_MASK
 			#pragma shader_feature _DETAIL_ALBEDO_MAP
 			#pragma shader_feature _DETAIL_NORMAL_MAP
-			#pragma shader_feature _TESSELLATION_EDGE
 
 			#pragma multi_compile _ LOD_FADE_CROSSFADE
 
 			#pragma multi_compile_prepassfinal
+			#pragma multi_compile_instancing
+			#pragma instancing_options lodfade
 
-			#pragma vertex MyTessellationVertexProgram
+			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram
-			#pragma hull MyHullProgram
-			#pragma domain MyDomainProgram
 			#pragma geometry MyGeometryProgram
-
 			#define DEFERRED_PASS
 
 			#include "My FlatWireframe.cginc"
-			#include "My Tessellation.cginc"
+
 			ENDCG
 		}
 

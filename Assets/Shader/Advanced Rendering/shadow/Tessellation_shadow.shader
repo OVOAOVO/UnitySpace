@@ -1,4 +1,4 @@
-Shader "Custom/Tessellation" {
+Shader "Custom/Tessellation_shadow" {
 
 	Properties {
 		_Color ("Tint", Color) = (1, 1, 1, 1)
@@ -26,10 +26,6 @@ Shader "Custom/Tessellation" {
 		_DetailBumpScale ("Detail Bump Scale", Float) = 1
 
 		_Cutoff ("Alpha Cutoff", Range(0, 1)) = 0.5
-
-		_WireframeColor ("Wireframe Color", Color) = (0, 0, 0)
-		_WireframeSmoothing ("Wireframe Smoothing", Range(0, 10)) = 1
-		_WireframeThickness ("Wireframe Thickness", Range(0, 10)) = 1
 
 		[HideInInspector] _SrcBlend ("_SrcBlend", Float) = 1
 		[HideInInspector] _DstBlend ("_DstBlend", Float) = 0
@@ -82,11 +78,10 @@ Shader "Custom/Tessellation" {
 			#pragma fragment MyFragmentProgram
 			#pragma hull MyHullProgram
 			#pragma domain MyDomainProgram
-			#pragma geometry MyGeometryProgram
 
 			#define FORWARD_BASE_PASS
 
-			#include "My FlatWireframe.cginc"
+			#include "My Lighting.cginc"
 			#include "My Tessellation.cginc"
 
 			ENDCG
@@ -123,9 +118,8 @@ Shader "Custom/Tessellation" {
 			#pragma fragment MyFragmentProgram
 			#pragma hull MyHullProgram
 			#pragma domain MyDomainProgram
-			#pragma geometry MyGeometryProgram
 
-			#include "My FlatWireframe.cginc"
+			#include "My Lighting.cginc"
 			#include "My Tessellation.cginc"
 
 			ENDCG
@@ -161,11 +155,10 @@ Shader "Custom/Tessellation" {
 			#pragma fragment MyFragmentProgram
 			#pragma hull MyHullProgram
 			#pragma domain MyDomainProgram
-			#pragma geometry MyGeometryProgram
 
 			#define DEFERRED_PASS
 
-			#include "My FlatWireframe.cginc"
+			#include "My Lighting.cginc"
 			#include "My Tessellation.cginc"
 			ENDCG
 		}
@@ -177,11 +170,13 @@ Shader "Custom/Tessellation" {
 
 			CGPROGRAM
 
-			#pragma target 3.0
+			#pragma target 4.6
 
 			#pragma shader_feature _ _RENDERING_CUTOUT _RENDERING_FADE _RENDERING_TRANSPARENT
 			#pragma shader_feature _SEMITRANSPARENT_SHADOWS
 			#pragma shader_feature _SMOOTHNESS_ALBEDO
+			#pragma shader_feature _PARALLAX_MAP
+			#pragma shader_feature _TESSELLATION_EDGE
 
 			#pragma multi_compile _ LOD_FADE_CROSSFADE
 
@@ -189,10 +184,13 @@ Shader "Custom/Tessellation" {
 			#pragma multi_compile_instancing
 			#pragma instancing_options lodfade force_same_maxcount_for_gl
 
-			#pragma vertex MyShadowVertexProgram
+			#pragma vertex MyTessellationVertexProgram
 			#pragma fragment MyShadowFragmentProgram
+			#pragma hull MyHullProgram
+			#pragma domain MyDomainProgram
 
 			#include "My Shadows.cginc"
+			#include "My Tessellation.cginc"
 
 			ENDCG
 		}
