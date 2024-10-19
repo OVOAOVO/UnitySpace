@@ -11,6 +11,5 @@
 5. ObjectManger,工程资源管理  
 6. Rendering 主流的各种渲染技术的实现
 7. AdvancedRendering 超出 Unity 标准着色器范围得Rendering
-8. SRP Unity自定义渲染管线
 
 Mesh Basic Unity的mesh相关基础(prefab)
