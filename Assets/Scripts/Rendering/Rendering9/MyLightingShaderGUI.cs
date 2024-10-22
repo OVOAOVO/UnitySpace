@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEditor;
 
-public class MyLightingShaderGUI : ShaderGUI
+public class MyLightingShaderGUI : MyBaseShaderGUI
 {
 
     enum SmoothnessSource
@@ -73,9 +73,7 @@ public class MyLightingShaderGUI : ShaderGUI
         MaterialEditor editor, MaterialProperty[] properties
     )
     {
-        this.target = editor.target as Material;
-        this.editor = editor;
-        this.properties = properties;
+        base.OnGUI(editor, properties);
         DoRenderingMode();
         if (target.HasProperty("_TessellationUniform"))
         {
