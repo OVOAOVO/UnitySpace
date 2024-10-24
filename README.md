@@ -1,5 +1,5 @@
 # UnitySpace
-对于Unity的练习
+对于Unity的练习 Unity 2022.3.17f1c1 (c1为国内特供版)
 
 ## 按照不同的Scene来划分
 ### 注:如果shader出现紫色异常,请更换渲染管线,默认/URP
